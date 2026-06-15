@@ -26,14 +26,14 @@
 </script>
 
 <!-- Display hasil -->
-<div class="mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-slate-800">
+<div class="mb-4 rounded-2xl bg-white p-4 shadow-sm dark:bg-stone-800">
   {#if result.caption}
-    <div class="text-xs text-slate-400 dark:text-slate-500">{result.caption}</div>
+    <div class="text-xs text-stone-400 dark:text-stone-500">{result.caption}</div>
   {/if}
   <div
     class="mt-1 break-words text-3xl font-semibold tabular-nums {result.ok
-      ? 'text-indigo-600 dark:text-indigo-400'
-      : 'text-slate-300 dark:text-slate-600'}"
+      ? 'text-brand-600 dark:text-brand-400'
+      : 'text-stone-300 dark:text-stone-600'}"
   >
     {result.main}
   </div>
