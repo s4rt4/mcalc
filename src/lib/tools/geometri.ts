@@ -1,14 +1,14 @@
 import type { Tool, Field, Option, Values } from "../types";
 import { num, fmt, ok, no } from "../format";
-import iVolume from "../../../svg/box.svg?raw";
+import iVolume from "../../../svg/rotate-3d.svg?raw";
 import iLuasRuang from "../../../svg/cuboid.svg?raw";
-import iKeliling from "../../../svg/hexagon.svg?raw";
+import iKeliling from "../../../svg/rotate-ccw.svg?raw";
 import iLuasDatar from "../../../svg/shapes.svg?raw";
 import iPythagoras from "../../../svg/triangle-right.svg?raw";
-import iJarak2 from "../../../svg/ruler-dimension-line.svg?raw";
+import iJarak2 from "../../../svg/route.svg?raw";
 import iDiagonal from "../../../svg/diameter.svg?raw";
 import iJuring from "../../../svg/chart-pie.svg?raw";
-import iGradien from "../../../svg/chart-no-axes-combined.svg?raw";
+import iGradien from "../../../svg/chart-line.svg?raw";
 // Ikon bentuk untuk picker
 import sCube from "../../../svg/box.svg?raw";
 import sCuboid from "../../../svg/cuboid.svg?raw";

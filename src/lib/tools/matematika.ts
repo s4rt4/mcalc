@@ -3,9 +3,9 @@ import { num, fmt, ok, no } from "../format";
 import iPersentase from "../../../svg/percent.svg?raw";
 import iPecahan from "../../../svg/decimals-arrow-right.svg?raw";
 import iSkala from "../../../svg/scaling.svg?raw";
-import iFpb from "../../../svg/diff.svg?raw";
-import iKuad from "../../../svg/square-radical.svg?raw";
-import iStat from "../../../svg/sigma.svg?raw";
+import iFpb from "../../../svg/git-fork.svg?raw";
+import iKuad from "../../../svg/superscript.svg?raw";
+import iStat from "../../../svg/table.svg?raw";
 import iPerm from "../../../svg/asterisk.svg?raw";
 
 const f = (key: string, label: string): Field => ({ key, label, type: "number", placeholder: label });

@@ -7,9 +7,9 @@ import iUang from "../../../svg/dollar-sign.svg?raw";
 import iWaktu from "../../../svg/clock.svg?raw";
 import iKecepatan from "../../../svg/orbit.svg?raw";
 import iLuas from "../../../svg/square.svg?raw";
-import iVolC from "../../../svg/cylinder.svg?raw";
-import iData from "../../../svg/hexagon.svg?raw";
-import iBil from "../../../svg/variable.svg?raw";
+import iVolC from "../../../svg/droplet.svg?raw";
+import iData from "../../../svg/arrow-down-0-1.svg?raw";
+import iBil from "../../../svg/binary.svg?raw";
 
 const opt = (value: string, label: string): Option => ({ value, label });
 

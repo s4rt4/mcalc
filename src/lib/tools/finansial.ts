@@ -4,8 +4,8 @@ import iDiskon from "../../../svg/ticket-percent.svg?raw";
 import iCicilan from "../../../svg/chart-no-axes-combined.svg?raw";
 import iUntung from "../../../svg/diff.svg?raw";
 import iMargin from "../../../svg/chart-pie.svg?raw";
-import iBunga from "../../../svg/dollar-sign.svg?raw";
-import iZakat from "../../../svg/scale.svg?raw";
+import iBunga from "../../../svg/badge-percent.svg?raw";
+import iZakat from "../../../svg/heart-handshake.svg?raw";
 
 const f = (key: string, label: string): Field => ({ key, label, type: "number", placeholder: label });
 
