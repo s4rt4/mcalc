@@ -6,6 +6,10 @@ import iSuhu from "../../../svg/thermometer.svg?raw";
 import iUang from "../../../svg/dollar-sign.svg?raw";
 import iWaktu from "../../../svg/clock.svg?raw";
 import iKecepatan from "../../../svg/orbit.svg?raw";
+import iLuas from "../../../svg/square.svg?raw";
+import iVolC from "../../../svg/cylinder.svg?raw";
+import iData from "../../../svg/hexagon.svg?raw";
+import iBil from "../../../svg/variable.svg?raw";
 
 const opt = (value: string, label: string): Option => ({ value, label });
 
@@ -101,4 +105,71 @@ const suhu: Tool = {
   },
 };
 
-export const konversi: Tool[] = [berat, jarak, suhu, uang, waktu, kecepatan];
+const luas = conv("luas", "Luas", iLuas, [
+  ["m2", "m²", 1],
+  ["cm2", "cm²", 0.0001],
+  ["mm2", "mm²", 0.000001],
+  ["km2", "km²", 1000000],
+  ["ha", "Hektar", 10000],
+  ["are", "Are", 100],
+  ["ft2", "kaki²", 0.092903],
+]);
+
+const volumeCairan = conv("volumeCairan", "Volume Cairan", iVolC, [
+  ["L", "Liter", 1],
+  ["mL", "mL", 0.001],
+  ["m3", "m³", 1000],
+  ["cc", "cc", 0.001],
+  ["gal", "Galon (US)", 3.78541],
+]);
+
+// Basis 1024 (KB = 1024 B), umum dipakai untuk penyimpanan.
+const data = conv("data", "Data Digital", iData, [
+  ["bit", "bit", 0.125],
+  ["B", "Byte", 1],
+  ["KB", "KB", 1024],
+  ["MB", "MB", 1048576],
+  ["GB", "GB", 1073741824],
+  ["TB", "TB", 1099511627776],
+]);
+
+const basisOpts: Option[] = [
+  opt("10", "Desimal (10)"),
+  opt("2", "Biner (2)"),
+  opt("8", "Oktal (8)"),
+  opt("16", "Heksa (16)"),
+];
+
+const bilangan: Tool = {
+  id: "bilangan",
+  cat: "konv",
+  label: "Bilangan",
+  icon: iBil,
+  fields: () => [
+    { key: "val", label: "Nilai", type: "number", placeholder: "cth: 1010 atau FF" },
+    { key: "from", label: "Dari basis", type: "select", options: basisOpts },
+    { key: "to", label: "Ke basis", type: "select", options: basisOpts },
+  ],
+  compute: (v) => {
+    const raw = (v.val ?? "").trim();
+    if (!raw) return no("Masukkan nilai");
+    const from = Number(v.from || "10");
+    const to = Number(v.to || "10");
+    const n = parseInt(raw, from);
+    if (Number.isNaN(n)) return no(`"${raw}" bukan basis ${from} yang valid`);
+    return ok(n.toString(to).toUpperCase(), `${raw} (basis ${from}) =`);
+  },
+};
+
+export const konversi: Tool[] = [
+  berat,
+  jarak,
+  suhu,
+  uang,
+  waktu,
+  kecepatan,
+  luas,
+  volumeCairan,
+  data,
+  bilangan,
+];

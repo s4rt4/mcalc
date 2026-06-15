@@ -5,6 +5,10 @@ import iLuasRuang from "../../../svg/cuboid.svg?raw";
 import iKeliling from "../../../svg/hexagon.svg?raw";
 import iLuasDatar from "../../../svg/shapes.svg?raw";
 import iPythagoras from "../../../svg/triangle-right.svg?raw";
+import iJarak2 from "../../../svg/ruler-dimension-line.svg?raw";
+import iDiagonal from "../../../svg/diameter.svg?raw";
+import iJuring from "../../../svg/chart-pie.svg?raw";
+import iGradien from "../../../svg/chart-no-axes-combined.svg?raw";
 // Ikon bentuk untuk picker
 import sCube from "../../../svg/box.svg?raw";
 import sCuboid from "../../../svg/cuboid.svg?raw";
@@ -193,4 +197,92 @@ const pythagoras: Tool = {
   },
 };
 
-export const geometri: Tool[] = [volume, luasRuang, keliling, luasDatar, pythagoras];
+const jarak2titik: Tool = {
+  id: "jarak2titik",
+  cat: "geo",
+  label: "Jarak 2 Titik",
+  icon: iJarak2,
+  fields: () => [f("x1", "x₁"), f("y1", "y₁"), f("x2", "x₂"), f("y2", "y₂")],
+  compute: (v) => {
+    const x1 = num(v, "x1"), y1 = num(v, "y1"), x2 = num(v, "x2"), y2 = num(v, "y2");
+    if (x1 === null || y1 === null || x2 === null || y2 === null) return no("Lengkapi 4 koordinat");
+    const d = Math.hypot(x2 - x1, y2 - y1);
+    return ok(fmt(d, 4), `Titik tengah (${fmt((x1 + x2) / 2, 2)}, ${fmt((y1 + y2) / 2, 2)})`);
+  },
+};
+
+const diagShapes: Option[] = [
+  opt("persegi", "Persegi", sSquare),
+  opt("persegiPanjang", "Persg. Panjang", sRect),
+  opt("kubus", "Kubus", sCube),
+  opt("balok", "Balok", sCuboid),
+];
+
+const diagonal: Tool = {
+  id: "diagonal",
+  cat: "geo",
+  label: "Diagonal",
+  icon: iDiagonal,
+  fields: (v) => {
+    const base = [shapeField(diagShapes)];
+    switch (v.shape) {
+      case "persegi": return [...base, f("sisi", "Sisi")];
+      case "persegiPanjang": return [...base, f("p", "Panjang"), f("l", "Lebar")];
+      case "kubus": return [...base, f("sisi", "Sisi")];
+      case "balok": return [...base, f("p", "Panjang"), f("l", "Lebar"), f("t", "Tinggi")];
+      default: return base;
+    }
+  },
+  compute: (v) => {
+    switch (v.shape) {
+      case "persegi": { const s = num(v, "sisi"); if (s !== null) return ok(fmt(s * Math.SQRT2, 4), "Diagonal"); break; }
+      case "persegiPanjang": { const p = num(v, "p"), l = num(v, "l"); if (p !== null && l !== null) return ok(fmt(Math.hypot(p, l), 4), "Diagonal"); break; }
+      case "kubus": { const s = num(v, "sisi"); if (s !== null) return ok(fmt(s * Math.sqrt(3), 4), `Diagonal ruang · bidang ${fmt(s * Math.SQRT2, 3)}`); break; }
+      case "balok": { const p = num(v, "p"), l = num(v, "l"), t = num(v, "t"); if (p !== null && l !== null && t !== null) return ok(fmt(Math.sqrt(p * p + l * l + t * t), 4), "Diagonal ruang"); break; }
+    }
+    return no("Lengkapi input");
+  },
+};
+
+const juring: Tool = {
+  id: "juring",
+  cat: "geo",
+  label: "Juring & Busur",
+  icon: iJuring,
+  fields: () => [f("r", "Jari-jari"), f("sudut", "Sudut pusat (°)")],
+  compute: (v) => {
+    const r = num(v, "r"), a = num(v, "sudut");
+    if (r === null || a === null) return no("Lengkapi input");
+    const luas = (a / 360) * PI * r * r;
+    const busur = (a / 360) * 2 * PI * r;
+    return ok(fmt(luas, 2), `Luas juring · panjang busur ${fmt(busur, 2)}`);
+  },
+};
+
+const gradien: Tool = {
+  id: "gradien",
+  cat: "geo",
+  label: "Gradien Garis",
+  icon: iGradien,
+  fields: () => [f("x1", "x₁"), f("y1", "y₁"), f("x2", "x₂"), f("y2", "y₂")],
+  compute: (v) => {
+    const x1 = num(v, "x1"), y1 = num(v, "y1"), x2 = num(v, "x2"), y2 = num(v, "y2");
+    if (x1 === null || y1 === null || x2 === null || y2 === null) return no("Lengkapi 4 koordinat");
+    if (x2 - x1 === 0) return ok("∞", "Garis vertikal (gradien tak terdefinisi)");
+    const m = (y2 - y1) / (x2 - x1);
+    const c = y1 - m * x1;
+    return ok(fmt(m, 4), `y = ${fmt(m, 3)}x ${c >= 0 ? "+" : "−"} ${fmt(Math.abs(c), 3)}`);
+  },
+};
+
+export const geometri: Tool[] = [
+  volume,
+  luasRuang,
+  keliling,
+  luasDatar,
+  pythagoras,
+  jarak2titik,
+  diagonal,
+  juring,
+  gradien,
+];
