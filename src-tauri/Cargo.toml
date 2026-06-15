@@ -1,0 +1,20 @@
+[package]
+name = "m-calc"
+version = "0.1.0"
+description = "Kalkulator serbaguna ringan"
+authors = ["sarta"]
+edition = "2021"
+
+[lib]
+# Suffix `_lib` agar nama lib unik & tak bentrok dengan nama bin di Windows.
+name = "m_calc_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
