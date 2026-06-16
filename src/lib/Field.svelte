@@ -48,6 +48,8 @@
         <option value={o.value}>{o.label}</option>
       {/each}
     </select>
+  {:else if field.type === "date"}
+    <input class={box} type="date" value={values[field.key] ?? ""} oninput={set} />
   {:else}
     <input
       class={box}

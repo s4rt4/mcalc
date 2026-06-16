@@ -3,24 +3,20 @@
   import FieldInput from "./Field.svelte";
   import { fade } from "svelte/transition";
 
-  let { tool }: { tool: Tool } = $props();
+  let { tool, seed = {} }: { tool: Tool; seed?: Values } = $props();
 
-  let values = $state<Values>({});
-  let lastId = "";
-
-  // Saat alat berganti: reset input & isi default untuk dropdown unit.
-  $effect(() => {
-    if (tool.id !== lastId) {
-      lastId = tool.id;
-      const seed: Values = {};
-      for (const f of tool.fields({})) {
-        if (f.type === "select" && f.options && f.options[0]?.value !== "") {
-          seed[f.key] = f.options[0].value;
-        }
-      }
-      values = seed;
+  // Komponen di-remount tiap navigasi (key di App), jadi cukup inisialisasi sekali:
+  // isi default field + default select, lalu timpa dengan seed (mis. bentuk terpilih dari search).
+  function initial(): Values {
+    const s: Values = {};
+    for (const f of tool.fields(seed)) {
+      if (f.default != null) s[f.key] = f.default;
+      else if (f.type === "select" && f.options && f.options[0]?.value !== "") s[f.key] = f.options[0].value;
     }
-  });
+    return { ...s, ...seed };
+  }
+
+  let values = $state<Values>(initial());
 
   const fields = $derived(tool.fields(values));
   const result = $derived(tool.compute(values));

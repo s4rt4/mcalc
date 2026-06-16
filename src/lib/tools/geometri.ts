@@ -276,13 +276,13 @@ const gradien: Tool = {
 };
 
 export const geometri: Tool[] = [
-  volume,
-  luasRuang,
-  keliling,
-  luasDatar,
-  pythagoras,
-  jarak2titik,
-  diagonal,
-  juring,
-  gradien,
+  { ...volume, keywords: ["volume", "isi", "bangun ruang", "3d"] },
+  { ...luasRuang, keywords: ["luas permukaan", "surface area", "bangun ruang"] },
+  { ...keliling, keywords: ["keliling", "perimeter", "bangun datar"] },
+  { ...luasDatar, keywords: ["luas", "area", "bangun datar"] },
+  { ...pythagoras, keywords: ["pythagoras", "phytagoras", "siku", "hipotenusa", "miring"] },
+  { ...jarak2titik, keywords: ["jarak", "distance", "koordinat", "titik", "kartesius"] },
+  { ...diagonal, keywords: ["diagonal", "bidang", "ruang"] },
+  { ...juring, keywords: ["juring", "busur", "sektor", "sector", "arc"] },
+  { ...gradien, keywords: ["gradien", "slope", "kemiringan", "garis"] },
 ];

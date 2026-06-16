@@ -8,11 +8,13 @@ export interface Option {
 export interface Field {
   key: string;
   label: string;
-  type: "number" | "select";
+  type: "number" | "select" | "date";
   placeholder?: string;
   options?: Option[];
   /** Render select sebagai grid tombol ber-ikon, bukan dropdown. */
   picker?: boolean;
+  /** Nilai awal default (mis. tanggal hari ini, tarif PPN). */
+  default?: string;
 }
 
 export type Values = Record<string, string>;
@@ -31,6 +33,8 @@ export interface Tool {
   label: string;
   /** SVG markup mentah (inline via {@html}). */
   icon: string;
+  /** Sinonim/alias untuk pencarian global. */
+  keywords?: string[];
   /** Field bisa dinamis tergantung nilai sekarang (mis. pilihan bangun). */
   fields: (v: Values) => Field[];
   compute: (v: Values) => Result;

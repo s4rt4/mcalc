@@ -10,6 +10,12 @@ import iLuas from "../../../svg/square.svg?raw";
 import iVolC from "../../../svg/droplet.svg?raw";
 import iData from "../../../svg/arrow-down-0-1.svg?raw";
 import iBil from "../../../svg/binary.svg?raw";
+import iTekanan from "../../../svg/circle-gauge.svg?raw";
+import iEnergi from "../../../svg/zap.svg?raw";
+import iDaya from "../../../svg/hand-fist.svg?raw";
+import iSudut from "../../../svg/square-round-corner.svg?raw";
+import iRomawi from "../../../svg/tally-3.svg?raw";
+import iBbm from "../../../svg/fuel.svg?raw";
 
 const opt = (value: string, label: string): Option => ({ value, label });
 
@@ -161,15 +167,130 @@ const bilangan: Tool = {
   },
 };
 
+const tekanan = conv("tekanan", "Tekanan", iTekanan, [
+  ["Pa", "Pascal", 1],
+  ["kPa", "Kilopascal", 1000],
+  ["bar", "Bar", 100000],
+  ["atm", "Atmosfer", 101325],
+  ["psi", "psi", 6894.76],
+  ["mmHg", "mmHg", 133.322],
+]);
+
+const energi = conv("energi", "Energi", iEnergi, [
+  ["J", "Joule", 1],
+  ["kJ", "Kilojoule", 1000],
+  ["cal", "Kalori", 4.184],
+  ["kcal", "Kilokalori", 4184],
+  ["kWh", "kWh", 3600000],
+  ["BTU", "BTU", 1055.06],
+]);
+
+const daya = conv("daya", "Daya", iDaya, [
+  ["W", "Watt", 1],
+  ["kW", "Kilowatt", 1000],
+  ["hp", "Horsepower", 745.7],
+  ["PS", "PK / PS", 735.5],
+]);
+
+const sudut = conv("sudut", "Sudut", iSudut, [
+  ["deg", "Derajat", 1],
+  ["rad", "Radian", 180 / Math.PI],
+  ["grad", "Gradian", 0.9],
+]);
+
+// Angka Romawi ↔ desimal (1–3999, bentuk kanonik).
+const ROMAN: [number, string][] = [
+  [1000, "M"], [900, "CM"], [500, "D"], [400, "CD"], [100, "C"], [90, "XC"],
+  [50, "L"], [40, "XL"], [10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"],
+];
+function toRoman(n: number): string | null {
+  if (!Number.isInteger(n) || n < 1 || n > 3999) return null;
+  let r = "";
+  for (const [v, s] of ROMAN) while (n >= v) { r += s; n -= v; }
+  return r;
+}
+function fromRoman(s: string): number | null {
+  const val: Record<string, number> = { I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000 };
+  let total = 0;
+  for (let i = 0; i < s.length; i++) {
+    const c = val[s[i]];
+    if (!c) return null;
+    const next = val[s[i + 1]];
+    if (next && c < next) total -= c;
+    else total += c;
+  }
+  return toRoman(total) === s ? total : null; // tolak bentuk tak baku (mis. IIII)
+}
+
+const romawi: Tool = {
+  id: "romawi",
+  cat: "konv",
+  label: "Angka Romawi",
+  icon: iRomawi,
+  keywords: ["romawi", "roman", "numeral", "angka"],
+  fields: () => [
+    { key: "val", label: "Nilai", type: "number", placeholder: "cth: 2024 atau MMXXIV" },
+    { key: "from", label: "Dari", type: "select", options: [opt("dec", "Desimal"), opt("rom", "Romawi")] },
+    { key: "to", label: "Ke", type: "select", options: [opt("dec", "Desimal"), opt("rom", "Romawi")] },
+  ],
+  compute: (v) => {
+    const raw = (v.val ?? "").trim();
+    if (!raw) return no("Masukkan nilai");
+    const from = v.from || "dec";
+    const to = v.to || "dec";
+    if (from === to) return ok(raw.toUpperCase(), "Basis sama");
+    if (from === "dec") {
+      const n = Number(raw);
+      const r = Number.isFinite(n) ? toRoman(n) : null;
+      return r ? ok(r, `${fmt(n)} =`) : no("Hanya bilangan bulat 1–3999");
+    }
+    const n = fromRoman(raw.toUpperCase());
+    return n === null ? no(`"${raw}" bukan angka Romawi valid`) : ok(fmt(n), `${raw.toUpperCase()} =`);
+  },
+};
+
+// Konsumsi BBM (non-linear): basis km/Liter.
+const BBM_OPT: Option[] = [opt("kml", "km/Liter"), opt("l100", "L/100 km"), opt("mpg", "mpg (US)")];
+const MPG_TO_KML = 0.425143707;
+const bbm: Tool = {
+  id: "bbm",
+  cat: "konv",
+  label: "Konsumsi BBM",
+  icon: iBbm,
+  keywords: ["bbm", "bensin", "fuel", "irit", "konsumsi", "mpg", "boros"],
+  fields: () => [
+    { key: "val", label: "Nilai", type: "number", placeholder: "Masukkan nilai" },
+    { key: "from", label: "Dari", type: "select", options: BBM_OPT },
+    { key: "to", label: "Ke", type: "select", options: BBM_OPT },
+  ],
+  compute: (v) => {
+    const x = num(v, "val");
+    if (x === null) return no("Masukkan nilai");
+    if (x <= 0) return no("Nilai harus > 0");
+    const from = v.from || "kml";
+    const to = v.to || "kml";
+    const kml = from === "kml" ? x : from === "l100" ? 100 / x : x * MPG_TO_KML;
+    const out = to === "kml" ? kml : to === "l100" ? 100 / kml : kml / MPG_TO_KML;
+    const lbl = (k: string) => BBM_OPT.find((o) => o.value === k)!.label;
+    return ok(`${fmt(out, 2)} ${lbl(to)}`, `${fmt(x, 2)} ${lbl(from)} =`);
+  },
+};
+
 export const konversi: Tool[] = [
-  berat,
-  jarak,
-  suhu,
-  uang,
-  waktu,
-  kecepatan,
-  luas,
-  volumeCairan,
-  data,
-  bilangan,
+  { ...berat, keywords: ["massa", "timbang", "weight", "kilogram", "gram", "pound", "ons"] },
+  { ...jarak, keywords: ["panjang", "distance", "length", "meter", "mil", "kaki", "yard"] },
+  { ...suhu, keywords: ["temperature", "celsius", "fahrenheit", "kelvin", "derajat"] },
+  { ...uang, keywords: ["mata uang", "kurs", "currency", "dollar", "rupiah", "euro", "yen", "forex"] },
+  { ...waktu, keywords: ["time", "detik", "menit", "jam", "hari", "minggu", "durasi"] },
+  { ...kecepatan, keywords: ["speed", "velocity", "laju", "kmh"] },
+  { ...luas, keywords: ["area", "hektar", "are", "tanah"] },
+  { ...volumeCairan, keywords: ["volume", "liter", "galon", "cairan", "isi"] },
+  { ...data, keywords: ["byte", "bit", "kilobyte", "megabyte", "gigabyte", "storage", "memori"] },
+  { ...bilangan, keywords: ["biner", "binary", "oktal", "heksa", "hex", "desimal", "basis"] },
+  { ...tekanan, keywords: ["pressure", "ban", "atm", "psi", "pascal"] },
+  { ...energi, keywords: ["energy", "joule", "kalori", "kwh", "btu", "listrik"] },
+  { ...daya, keywords: ["power", "watt", "horsepower", "pk", "ps", "tenaga"] },
+  { ...sudut, keywords: ["angle", "radian", "gradian", "derajat"] },
+  romawi,
+  bbm,
 ];
