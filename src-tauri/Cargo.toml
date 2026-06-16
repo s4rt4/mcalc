@@ -1,6 +1,6 @@
 [package]
 name = "m-calc"
-version = "0.2.0"
+version = "0.2.1"
 description = "Kalkulator serbaguna ringan"
 authors = ["sarta"]
 edition = "2021"

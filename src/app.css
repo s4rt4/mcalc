@@ -19,6 +19,14 @@ body,
   height: 100%;
 }
 
+/* Kontrol native (mis. ikon kalender pada <input type=date>) ikut tema terang/gelap */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+
 body {
   margin: 0;
   overflow: hidden;
